@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.jsx';
+
+@theme {
+    --font-sans: 'Poppins', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Poppins', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Mountain Top Communications Official Brand Colors */
+    --color-mtc-hunter: #386642;          /* Primary: Hunter Green */
+    --color-mtc-hunter-dark: #27482E;
+    --color-mtc-hunter-light: #4A8557;
+    --color-mtc-hunter-muted: rgba(56, 102, 66, 0.25);
+
+    --color-mtc-cornsilk: #FFEBCC;        /* Primary: Cornsilk */
+    --color-mtc-cornsilk-dark: #E8CE9D;
+    --color-mtc-cornsilk-light: #FFF8EE;
+
+    --color-mtc-oxford: #1D2729;          /* Secondary: Oxford Blue */
+    --color-mtc-oxford-dark: #121A1C;     /* Deep root background */
+    --color-mtc-oxford-surface: #162224;  /* Sidebars / Navbars */
+    --color-mtc-oxford-card: #1D2729;     /* Elevated cards */
+    --color-mtc-oxford-hover: #263639;    /* Card hover state */
+    --color-mtc-oxford-border: #2D4044;   /* Surface borders */
+
+    --color-mtc-platinum: #CADEDF;        /* Secondary: Platinum */
+    --color-mtc-platinum-muted: #829FA1;  /* Secondary text / muted icons */
+}
+
+/* Custom scrollbar matching MTC brand palette */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #121A1C;
+}
+::-webkit-scrollbar-thumb {
+    background: #2D4044;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #386642;
+}
+
+/* Global button focus states */
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid #386642;
+    outline-offset: 2px;
+}
