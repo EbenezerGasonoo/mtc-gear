@@ -1,0 +1,14 @@
+.git
+.github
+node_modules
+vendor
+tests
+.env
+.phpunit.result.cache
+*.log
+Thumbs.db
+.DS_Store
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*

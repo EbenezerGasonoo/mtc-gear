@@ -108,11 +108,27 @@ The database seeders generate realistic equipment, categories, locations, a turn
 
 ---
 
-## 5. Production Deployment Guide (Linux VPS / cPanel / Apache / MySQL 8.0)
+## 5. Production Deployment Guide
 
-MTC GEAR is engineered for standard Linux VPS environments as well as cPanel shared hosting running Apache and MySQL 8.0+.
+### 5.1 One-Click Deployment on Render.com (Free & Recommended)
 
-### 5.1 Server Requirements
+MTC GEAR includes a production-ready multi-stage `Dockerfile` and `render.yaml` Blueprint for 1-click cloud deployment on [Render.com](https://render.com).
+
+#### Quick Steps:
+1. Sign in to your [Render Dashboard](https://dashboard.render.com).
+2. Click **"New +"** (top right) and choose **"Blueprint"** (or **"Web Service"**).
+3. Connect your GitHub repository: `https://github.com/EbenezerGasonoo/mtc-gear`.
+4. Render automatically reads `render.yaml` and configures:
+   - **Runtime**: Docker (Multi-stage Node.js Vite + PHP 8.2 Apache)
+   - **Database**: SQLite pre-configured with auto-migration and seeding (or connect Render PostgreSQL)
+   - **Port Binding**: Automatically bound to dynamic `$PORT`
+   - **Health Check**: `/login`
+5. Click **"Apply"** or **"Create Web Service"**.
+6. Render builds the application, executes migrations and seeders, and issues a live HTTPS URL (e.g., `https://mtc-gear.onrender.com`).
+
+---
+
+### 5.2 Server Requirements (Linux VPS / cPanel / Apache / MySQL 8.0)
 - **Operating System**: Ubuntu 22.04 / 24.04 LTS, AlmaLinux 9, Debian 12, or cPanel on CloudLinux
 - **Web Server**: Apache 2.4+ (with `mod_rewrite` enabled) or Nginx
 - **PHP**: PHP 8.2+ or 8.3+ with extensions:
@@ -121,7 +137,7 @@ MTC GEAR is engineered for standard Linux VPS environments as well as cPanel sha
 
 ---
 
-### 5.2 Step-by-Step Deployment on cPanel
+### 5.3 Step-by-Step Deployment on cPanel
 
 #### Step A: Application Placement
 1. In cPanel **File Manager** or via SSH/SFTP, upload the project directory to your home folder:
