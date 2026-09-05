@@ -3,6 +3,7 @@ import {
     LayoutDashboard,
     Boxes,
     FileSpreadsheet,
+    Calendar,
     ArrowUpRight,
     ArrowDownLeft,
     Wrench,
@@ -26,6 +27,7 @@ export default function Sidebar({ currentView, setCurrentView, isOpen, onClose }
     const mainNav = [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'inventory', label: 'Inventory', icon: Boxes },
+        { id: 'calendar', label: 'Production Gantt', icon: Calendar },
         { id: 'requests', label: 'Requests', icon: FileSpreadsheet },
         { id: 'checkouts', label: 'Checkouts', icon: ArrowUpRight },
         { id: 'returns', label: 'Returns', icon: ArrowDownLeft },

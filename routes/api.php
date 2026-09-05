@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\DashboardController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReturnController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -132,6 +134,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reports/staff-usage', [ReportController::class, 'staffUsage']);
     Route::get('/reports/maintenance', [ReportController::class, 'maintenance']);
     Route::get('/reports/damage', [ReportController::class, 'damage']);
+
+    // Production Calendar & Gantt Timeline
+    Route::get('/calendar/timeline', [CalendarController::class, 'timeline']);
+    Route::get('/calendar/conflicts', [CalendarController::class, 'conflicts']);
+
+    // Webhooks & Integrations (WhatsApp, Custom Webhooks)
+    Route::middleware('role:super_admin,gear_overseer')->group(function () {
+        Route::get('/webhooks', [WebhookController::class, 'index']);
+        Route::post('/webhooks', [WebhookController::class, 'store']);
+        Route::put('/webhooks/{id}', [WebhookController::class, 'update']);
+        Route::delete('/webhooks/{id}', [WebhookController::class, 'destroy']);
+        Route::post('/webhooks/{id}/test', [WebhookController::class, 'test']);
+    });
 
     // Super Admin Exclusive: Users, Settings & Immutable Audit Trail
     Route::middleware('role:super_admin')->group(function () {

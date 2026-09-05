@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class NotificationService
 {
@@ -14,7 +13,8 @@ class NotificationService
         string $type,
         string $title,
         string $message,
-        ?string $link = null
+        ?string $link = null,
+        array $meta = []
     ): Notification {
         $notification = Notification::create([
             'user_id' => $userId,
@@ -25,24 +25,54 @@ class NotificationService
             'is_read' => false,
         ]);
 
-        // Attempt email dispatch if mailer is configured
+        // Dispatch Email & WhatsApp alerts
         try {
-            $user = User::find($userId);
-            if ($user && $user->email && config('mail.default') !== 'log') {
-                // Can queue/send transactional email
-            }
+            AlertService::dispatch(
+                $type,
+                $title,
+                $message,
+                $meta,
+                $link ? url($link) : null,
+                $userId
+            );
         } catch (\Throwable $e) {
-            Log::warning("Could not dispatch email notification: " . $e->getMessage());
+            Log::warning("[NotificationService] AlertService dispatch failed: " . $e->getMessage());
         }
 
         return $notification;
     }
 
-    public static function notifyOverseers(string $type, string $title, string $message, ?string $link = null): void
-    {
+    public static function notifyOverseers(
+        string $type,
+        string $title,
+        string $message,
+        ?string $link = null,
+        array $meta = []
+    ): void {
         $overseers = User::whereIn('role', ['super_admin', 'gear_overseer'])->get();
         foreach ($overseers as $overseer) {
-            self::send($overseer->id, $type, $title, $message, $link);
+            Notification::create([
+                'user_id' => $overseer->id,
+                'type' => $type,
+                'title' => $title,
+                'message' => $message,
+                'link' => $link,
+                'is_read' => false,
+            ]);
+        }
+
+        // Dispatch Email to overseers & trigger WhatsApp webhooks once
+        try {
+            AlertService::dispatch(
+                $type,
+                $title,
+                $message,
+                $meta,
+                $link ? url($link) : null,
+                null // Broadcast to overseers
+            );
+        } catch (\Throwable $e) {
+            Log::warning("[NotificationService] AlertService overseer broadcast failed: " . $e->getMessage());
         }
     }
 }

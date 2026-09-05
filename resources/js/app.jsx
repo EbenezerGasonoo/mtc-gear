@@ -23,6 +23,7 @@ import LocationsView from './views/LocationsView';
 import AuditLogsView from './views/AuditLogsView';
 import SettingsView from './views/SettingsView';
 import ProfileView from './views/ProfileView';
+import CalendarView from './views/CalendarView';
 
 function MainApp() {
     const { user, loading, showToast } = useAuth();
@@ -134,6 +135,10 @@ function MainApp() {
 
                     {currentView === 'inventory' && (
                         <InventoryView onSelectAsset={handleSelectAsset} />
+                    )}
+
+                    {currentView === 'calendar' && (
+                        <CalendarView onNavigateTo={setCurrentView} />
                     )}
 
                     {currentView === 'asset-detail' && (
