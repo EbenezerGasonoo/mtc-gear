@@ -17,18 +17,33 @@ mkdir -p /var/www/html/storage/framework/views
 mkdir -p /var/www/html/storage/logs
 mkdir -p /var/www/html/database
 
-# Handle SQLite database
-if [ "$DB_CONNECTION" = "sqlite" ] || [ -z "$DB_CONNECTION" ]; then
-    DB_FILE="${DB_DATABASE:-/var/www/html/database/database.sqlite}"
-    if [ ! -f "$DB_FILE" ]; then
-        echo "[MTC-GEAR] Initializing SQLite database at $DB_FILE..."
-        touch "$DB_FILE"
+# Ensure SQLite database file exists
+DB_FILE="${DB_DATABASE:-/var/www/html/database/database.sqlite}"
+if [ ! -f "$DB_FILE" ]; then
+    echo "[MTC-GEAR] Initializing SQLite database at $DB_FILE..."
+    touch "$DB_FILE"
+fi
+
+# Ensure .env file exists so artisan commands (like key:generate) succeed
+if [ ! -f /var/www/html/.env ]; then
+    echo "[MTC-GEAR] Creating production .env from template..."
+    if [ -f /var/www/html/.env.example ]; then
+        cp /var/www/html/.env.example /var/www/html/.env
+    else
+        touch /var/www/html/.env
     fi
 fi
 
-# Generate app key if missing
-if [ -z "$APP_KEY" ]; then
-    echo "[MTC-GEAR] Generating application key..."
+# Configure SQLite in .env
+sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=sqlite/' /var/www/html/.env 2>/dev/null || true
+sed -i 's|^DB_DATABASE=.*|DB_DATABASE=/var/www/html/database/database.sqlite|' /var/www/html/.env 2>/dev/null || true
+sed -i 's/^SESSION_DRIVER=.*/SESSION_DRIVER=file/' /var/www/html/.env 2>/dev/null || true
+sed -i 's/^CACHE_STORE=.*/CACHE_STORE=file/' /var/www/html/.env 2>/dev/null || true
+sed -i 's/^QUEUE_CONNECTION=.*/QUEUE_CONNECTION=sync/' /var/www/html/.env 2>/dev/null || true
+
+# Generate application key if missing or not base64
+if ! grep -q "^APP_KEY=base64:" /var/www/html/.env 2>/dev/null; then
+    echo "[MTC-GEAR] Generating official Laravel base64 application key..."
     php artisan key:generate --force
 fi
 
@@ -42,13 +57,11 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Set permissions for Apache www-data AFTER migrations & cache generation
+# Set permissions for Apache www-data
 echo "[MTC-GEAR] Setting runtime directory permissions..."
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database /var/www/html/.env
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
-if [ -f "${DB_DATABASE:-/var/www/html/database/database.sqlite}" ]; then
-    chmod 664 "${DB_DATABASE:-/var/www/html/database/database.sqlite}"
-fi
+chmod 664 /var/www/html/.env "$DB_FILE" 2>/dev/null || true
 
 # Start Apache web server in foreground
 echo "[MTC-GEAR] Launching Apache web server on ports 80 and $PORT..."

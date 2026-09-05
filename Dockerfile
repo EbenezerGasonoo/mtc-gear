@@ -63,6 +63,7 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 
 # Copy application codebase
 COPY . .
+RUN cp .env.example .env
 
 # Copy compiled frontend assets from Stage 1 into public/build
 COPY --from=frontend-builder /app/public/build ./public/build
