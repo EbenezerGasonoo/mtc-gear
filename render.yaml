@@ -5,7 +5,7 @@ services:
     plan: free
     region: oregon
     dockerfilePath: ./Dockerfile
-    healthCheckPath: /login
+    healthCheckPath: /up
     envVars:
       - key: APP_NAME
         value: "MTC GEAR"
@@ -15,6 +15,8 @@ services:
         value: "false"
       - key: APP_KEY
         generateValue: true
+      - key: PORT
+        value: "10000"
       - key: DB_CONNECTION
         value: sqlite
       - key: DB_DATABASE
