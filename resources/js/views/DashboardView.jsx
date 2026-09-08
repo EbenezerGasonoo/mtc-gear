@@ -325,6 +325,22 @@ export default function DashboardView({ onNavigate, onNewRequest }) {
                     </div>
                 </div>
             </div>
+
+            {/* Footer / Developer Credits */}
+            <div className="pt-6 pb-2 text-center text-xs text-[#829FA1] border-t border-[#2D4044]/40 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <span>© {new Date().getFullYear()} Mountain Top Communications. All rights reserved.</span>
+                <span>
+                    Developed by{' '}
+                    <a
+                        href="https://entechnologygh.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#FFEBCC] hover:text-white underline underline-offset-2 transition font-medium"
+                    >
+                        Encryption Nonce Technology
+                    </a>
+                </span>
+            </div>
         </div>
     );
 }

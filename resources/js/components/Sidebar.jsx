@@ -168,6 +168,18 @@ export default function Sidebar({ currentView, setCurrentView, isOpen, onClose }
                             <LogOut size={16} />
                         </button>
                     </div>
+
+                    <div className="px-2 pt-2 text-[10px] text-center text-[#829FA1]/70 font-sans">
+                        Developed by{' '}
+                        <a
+                            href="https://entechnologygh.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#FFEBCC]/80 hover:text-[#FFEBCC] underline underline-offset-2 transition"
+                        >
+                            Encryption Nonce Technology
+                        </a>
+                    </div>
                 </div>
             </aside>
         </>
