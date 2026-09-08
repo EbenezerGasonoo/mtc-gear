@@ -202,7 +202,7 @@ export default function LoginView() {
                             rel="noopener noreferrer"
                             className="text-[#FFEBCC] hover:text-white underline underline-offset-2 transition font-medium"
                         >
-                            Encryption Nonce
+                            Encryption Nonce Technology
                         </a>
                     </div>
                 </div>

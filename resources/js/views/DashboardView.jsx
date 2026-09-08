@@ -337,7 +337,7 @@ export default function DashboardView({ onNavigate, onNewRequest }) {
                         rel="noopener noreferrer"
                         className="text-[#FFEBCC] hover:text-white underline underline-offset-2 transition font-medium"
                     >
-                        Encryption Nonce
+                        Encryption Nonce Technology
                     </a>
                 </span>
             </div>

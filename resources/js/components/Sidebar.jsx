@@ -177,7 +177,7 @@ export default function Sidebar({ currentView, setCurrentView, isOpen, onClose }
                             rel="noopener noreferrer"
                             className="text-[#FFEBCC]/80 hover:text-[#FFEBCC] underline underline-offset-2 transition"
                         >
-                            Encryption Nonce
+                            Encryption Nonce Technology
                         </a>
                     </div>
                 </div>
