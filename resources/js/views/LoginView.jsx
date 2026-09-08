@@ -194,15 +194,15 @@ export default function LoginView() {
 
                 <div className="text-center text-xs text-[#829FA1] mt-6 font-sans space-y-1">
                     <div>© {new Date().getFullYear()} Mountain Top Communications. All rights reserved.</div>
-                    <div className="text-[11px] text-[#829FA1]/80">
-                        Developed by{' '}
+                    <div className="text-[11px] text-[#829FA1]/80 flex items-center justify-center gap-1">
+                        <span>Developed with ❤️ by</span>
                         <a
                             href="https://entechnologygh.com/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-[#FFEBCC] hover:text-white underline underline-offset-2 transition font-medium"
                         >
-                            Encryption Nonce Technology
+                            Encryption Nonce
                         </a>
                     </div>
                 </div>

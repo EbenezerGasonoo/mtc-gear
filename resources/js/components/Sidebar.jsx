@@ -169,15 +169,15 @@ export default function Sidebar({ currentView, setCurrentView, isOpen, onClose }
                         </button>
                     </div>
 
-                    <div className="px-2 pt-2 text-[10px] text-center text-[#829FA1]/70 font-sans">
-                        Developed by{' '}
+                    <div className="px-2 pt-2 text-[10px] text-center text-[#829FA1]/70 font-sans flex items-center justify-center gap-1">
+                        <span>Developed with ❤️ by</span>
                         <a
                             href="https://entechnologygh.com/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-[#FFEBCC]/80 hover:text-[#FFEBCC] underline underline-offset-2 transition"
                         >
-                            Encryption Nonce Technology
+                            Encryption Nonce
                         </a>
                     </div>
                 </div>
