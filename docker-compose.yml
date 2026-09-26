@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  mtc-gear:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mtc-gear:latest
+    container_name: mtc-gear
+    restart: unless-stopped
+    ports:
+      - "${PORT_BIND:-8080}:80"
+    environment:
+      - APP_NAME=MTC GEAR
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=https://gear.mtc-network.space
+      - PORT=80
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/html/database/database.sqlite
+      - SESSION_DRIVER=file
+      - CACHE_STORE=file
+      - QUEUE_CONNECTION=sync
+      - LOG_CHANNEL=stderr
+      - FORCE_SEED=${FORCE_SEED:-false}
+    volumes:
+      # Persistent SQLite database storage
+      - gear_db_data:/var/www/html/database
+      # Persistent storage for uploaded photos, receipts, and asset documents
+      - gear_storage_data:/var/www/html/storage/app/public
+
+  # Optional Cloudflare Tunnel service:
+  # If you prefer running a dedicated tunnel container for MTC Gear:
+  # docker compose --profile tunnel up -d
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: mtc-gear-tunnel
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      - mtc-gear
+    profiles:
+      - tunnel
+
+volumes:
+  gear_db_data:
+    name: mtc_gear_database
+  gear_storage_data:
+    name: mtc_gear_storage

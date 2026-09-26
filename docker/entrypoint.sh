@@ -19,9 +19,11 @@ mkdir -p /var/www/html/database
 
 # Ensure SQLite database file exists
 DB_FILE="${DB_DATABASE:-/var/www/html/database/database.sqlite}"
+DB_IS_NEW=0
 if [ ! -f "$DB_FILE" ]; then
     echo "[MTC-GEAR] Initializing SQLite database at $DB_FILE..."
     touch "$DB_FILE"
+    DB_IS_NEW=1
 fi
 
 # Ensure .env file exists so artisan commands (like key:generate) succeed
@@ -47,9 +49,20 @@ if ! grep -q "^APP_KEY=base64:" /var/www/html/.env 2>/dev/null; then
     php artisan key:generate --force
 fi
 
+# Ensure public storage symlink exists
+if [ ! -L /var/www/html/public/storage ]; then
+    echo "[MTC-GEAR] Linking public storage directory..."
+    php artisan storage:link || true
+fi
+
 # Run database migrations and seeds
-echo "[MTC-GEAR] Running database migrations and seeders..."
-php artisan migrate --force --seed
+if [ "$DB_IS_NEW" = "1" ] || [ "${FORCE_SEED:-false}" = "true" ]; then
+    echo "[MTC-GEAR] Fresh database detected. Running database migrations and initial seeders..."
+    php artisan migrate --force --seed
+else
+    echo "[MTC-GEAR] Existing database detected. Running pending migrations..."
+    php artisan migrate --force
+fi
 
 # Optimize Laravel caches for production
 echo "[MTC-GEAR] Caching Laravel configuration and routes..."
