@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Mail, ArrowRight, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { MtcIcon } from '../components/MtcLogo';
 import { AfrihausPattern } from '../components/AfrihausPattern';
@@ -23,11 +23,6 @@ export default function LoginView() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleQuickLogin = (demoEmail, demoPass = 'Password123!') => {
-        setEmail(demoEmail);
-        setPassword(demoPass);
     };
 
     return (
@@ -138,58 +133,7 @@ export default function LoginView() {
                         </button>
                     </form>
 
-                    {/* Quick Demo Switcher */}
-                    <div className="mt-7 pt-5 border-t border-[#2D4044]">
-                        <div className="text-[11px] font-bold text-[#FFEBCC] uppercase tracking-wider text-center mb-3 flex items-center justify-center gap-1.5 font-sans">
-                            <Sparkles size={13} className="text-[#386642]" />
-                            <span>One-Click Demo Accounts</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                            <button
-                                type="button"
-                                onClick={() => handleQuickLogin('admin@mtc.local')}
-                                className="p-2.5 rounded-xl bg-[#162224] border border-[#2D4044] hover:border-[#386642] text-left transition group"
-                            >
-                                <div className="text-xs font-bold text-[#FFEBCC] group-hover:text-white font-sans">
-                                    Super Admin
-                                </div>
-                                <div className="text-[10px] text-[#829FA1] font-mono">admin@mtc.local</div>
-                            </button>
 
-                            <button
-                                type="button"
-                                onClick={() => handleQuickLogin('overseer@mtc.local')}
-                                className="p-2.5 rounded-xl bg-[#162224] border border-[#2D4044] hover:border-[#386642] text-left transition group"
-                            >
-                                <div className="text-xs font-bold text-[#CADEDF] group-hover:text-white font-sans">
-                                    Gear Overseer
-                                </div>
-                                <div className="text-[10px] text-[#829FA1] font-mono">overseer@mtc.local</div>
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => handleQuickLogin('staff@mtc.local')}
-                                className="p-2.5 rounded-xl bg-[#162224] border border-[#2D4044] hover:border-[#386642] text-left transition group"
-                            >
-                                <div className="text-xs font-bold text-[#A7F3D0] group-hover:text-white font-sans">
-                                    Staff / Crew
-                                </div>
-                                <div className="text-[10px] text-[#829FA1] font-mono">staff@mtc.local</div>
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => handleQuickLogin('viewer@mtc.local')}
-                                className="p-2.5 rounded-xl bg-[#162224] border border-[#2D4044] hover:border-[#386642] text-left transition group"
-                            >
-                                <div className="text-xs font-bold text-[#829FA1] group-hover:text-white font-sans">
-                                    Viewer (Read)
-                                </div>
-                                <div className="text-[10px] text-[#829FA1] font-mono">viewer@mtc.local</div>
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 <div className="text-center text-xs text-[#829FA1] mt-6 font-sans space-y-1">
