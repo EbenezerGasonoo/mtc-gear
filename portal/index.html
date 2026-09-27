@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS (v3 standalone via CDN) -->
+    <!-- Tailwind CSS (v3 via CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -39,16 +39,6 @@
                         sans: ['DM Sans', 'sans-serif'],
                         heading: ['Poppins', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-8px)' },
-                        }
                     }
                 }
             }
@@ -66,7 +56,6 @@
             overflow-x: hidden;
         }
 
-        /* Subtle grid background */
         .bg-grid-pattern {
             background-size: 40px 40px;
             background-image: 
@@ -74,7 +63,6 @@
                 linear-gradient(to bottom, rgba(255, 235, 204, 0.025) 1px, transparent 1px);
         }
 
-        /* Glassmorphism Card Style */
         .glass-card {
             background: linear-gradient(135deg, rgba(21, 33, 36, 0.85) 0%, rgba(14, 22, 24, 0.95) 100%);
             backdrop-filter: blur(16px);
@@ -85,30 +73,20 @@
 
         .glass-card:hover {
             transform: translateY(-6px);
-            border-color: rgba(56, 102, 66, 0.8);
-            box-shadow: 0 20px 40px -15px rgba(56, 102, 66, 0.25), 0 0 25px -5px rgba(255, 235, 204, 0.1);
-        }
-
-        .glass-card-dam:hover {
-            border-color: rgba(224, 169, 70, 0.8);
-            box-shadow: 0 20px 40px -15px rgba(224, 169, 70, 0.25), 0 0 25px -5px rgba(224, 169, 70, 0.1);
-        }
-
-        .glass-card-cloud:hover {
-            border-color: rgba(59, 130, 246, 0.8);
-            box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.25), 0 0 25px -5px rgba(59, 130, 246, 0.1);
         }
     </style>
 </head>
 <body class="min-h-screen relative flex flex-col justify-between selection:bg-[#386642] selection:text-[#FFEBCC]">
 
-    <!-- Ambient Glowing Blurs -->
+    <!-- Ambient Glows -->
     <div class="fixed top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-[#386642]/20 blur-[160px] pointer-events-none -z-10"></div>
     <div class="fixed top-[40%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#E0A946]/10 blur-[150px] pointer-events-none -z-10"></div>
     <div class="fixed bottom-[-10%] left-[20%] w-[600px] h-[600px] rounded-full bg-[#386642]/15 blur-[160px] pointer-events-none -z-10"></div>
 
-    <!-- Grid Overlay -->
     <div class="fixed inset-0 bg-grid-pattern pointer-events-none -z-10"></div>
+
+    <!-- Optional Announcement Banner -->
+    <div id="announcement-banner" class="hidden w-full py-2.5 px-4 text-center text-xs font-medium border-b transition-all"></div>
 
     <!-- Main Container -->
     <div class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 flex-grow flex flex-col justify-center">
@@ -116,20 +94,19 @@
         <!-- Top Header & Branding -->
         <header class="text-center mb-12 sm:mb-16">
             <!-- Pulsing Status Pill -->
-            <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#152124] border border-[#2D4448] text-xs font-mono mb-6 shadow-sm">
+            <div id="status-pill" class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#152124] border border-[#2D4448] text-xs font-mono mb-6 shadow-sm">
                 <span class="relative flex h-2 w-2">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span class="text-[#CADEDF]">MTC Unified Production Network</span>
+                <span class="text-[#CADEDF]">MTC Production Network</span>
                 <span class="text-[#829FA1]">•</span>
-                <span class="text-[#FFEBCC] font-semibold">Systems Online</span>
+                <span id="header-status-text" class="text-[#FFEBCC] font-semibold">Systems Online</span>
             </div>
 
             <!-- MTC Insignia & Brand Name -->
             <div class="flex items-center justify-center gap-3.5 mb-4">
-                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#386642] flex items-center justify-center shadow-lg shadow-[#386642]/30 border border-[#4D8A5B]/40 flex-shrink-0">
-                    <!-- MTC Vector Mark -->
+                <div id="portal-logo-container" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#386642] flex items-center justify-center shadow-lg shadow-[#386642]/30 border border-[#4D8A5B]/40 flex-shrink-0 overflow-hidden">
                     <svg width="34" height="34" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g fill="#FFEBCC">
                             <path d="M22 96 L48 38 C49 35 52 35 53 38 L54 41 L35 96 Z" fill-rule="evenodd"/>
@@ -140,214 +117,285 @@
                     </svg>
                 </div>
                 <div class="text-left">
-                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-heading">
+                    <h1 id="portal-org-name" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-heading">
                         Mountain Top Communications
                     </h1>
-                    <p class="text-xs sm:text-sm text-[#FFEBCC] font-mono tracking-wide font-medium">
+                    <p id="portal-title" class="text-xs sm:text-sm text-[#FFEBCC] font-mono tracking-wide font-medium">
                         Production Operations & Enterprise Portals
                     </p>
                 </div>
             </div>
 
-            <!-- Hero Subtitle -->
-            <p class="max-w-2xl mx-auto text-sm sm:text-base text-[#829FA1] mt-3 leading-relaxed">
+            <p id="portal-subtitle" class="max-w-2xl mx-auto text-sm sm:text-base text-[#829FA1] mt-3 leading-relaxed">
                 Select an application portal below to manage equipment reservations, access central media assets, or collaborate in the cloud.
             </p>
         </header>
 
-        <!-- Main Portal Cards Grid -->
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-
-            <!-- Card 1: MTC GEAR -->
-            <a href="https://gear.mtc-network.space/" class="group block glass-card rounded-2xl p-6 sm:p-7 relative overflow-hidden flex flex-col justify-between">
-                <!-- Top Accent Line -->
-                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#386642] via-[#4D8A5B] to-[#FFEBCC] opacity-80 group-hover:opacity-100 transition"></div>
-
-                <div>
-                    <!-- Card Top Row: Badge & Status -->
-                    <div class="flex items-center justify-between gap-2 mb-5">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#386642]/20 border border-[#386642]/50 text-[#FFEBCC] text-xs font-mono font-medium">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-[#4D8A5B]"></i>
-                            <span>Equipment Vault</span>
-                        </span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            <span>Live</span>
-                        </span>
-                    </div>
-
-                    <!-- Icon & Title -->
-                    <div class="flex items-center gap-3.5 mb-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-[#386642]/20 border border-[#386642]/40 flex items-center justify-center text-[#FFEBCC] group-hover:scale-105 group-hover:bg-[#386642] transition duration-300">
-                            <i data-lucide="camera" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-bold text-white font-heading group-hover:text-[#FFEBCC] transition">
-                                MTC GEAR
-                            </h2>
-                            <p class="text-xs text-[#829FA1] font-mono">gear.mtc-network.space</p>
-                        </div>
-                    </div>
-
-                    <!-- Description -->
-                    <p class="text-sm text-[#CADEDF]/90 leading-relaxed mb-6">
-                        Complete production equipment inventory, camera packages, QR code thermal printing, field reservations, mobile handover inspection checklists, and maintenance tickets.
-                    </p>
-
-                    <!-- Feature Tags -->
-                    <div class="flex flex-wrap gap-1.5 mb-6 text-[11px] font-mono text-[#829FA1]">
-                        <span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">Asset Registry</span>
-                        <span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">QR Scanner</span>
-                        <span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">Digital Signatures</span>
-                    </div>
-                </div>
-
-                <!-- Action Button -->
-                <div class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#386642] text-[#FFEBCC] font-semibold text-sm shadow-md group-hover:bg-[#2E5437] transition duration-200">
-                    <span>Launch MTC Gear</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition duration-200"></i>
-                </div>
-            </a>
-
-            <!-- Card 2: MTC DAM -->
-            <a href="https://dam.mtc-network.space/" class="group block glass-card glass-card-dam rounded-2xl p-6 sm:p-7 relative overflow-hidden flex flex-col justify-between">
-                <!-- Top Accent Line -->
-                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#E0A946] via-[#F59E0B] to-[#FFEBCC] opacity-80 group-hover:opacity-100 transition"></div>
-
-                <div>
-                    <!-- Card Top Row: Badge & Status -->
-                    <div class="flex items-center justify-between gap-2 mb-5">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#E0A946]/15 border border-[#E0A946]/40 text-[#FFEBCC] text-xs font-mono font-medium">
-                            <i data-lucide="film" class="w-3.5 h-3.5 text-[#E0A946]"></i>
-                            <span>Digital Asset Management</span>
-                        </span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            <span>Live</span>
-                        </span>
-                    </div>
-
-                    <!-- Icon & Title -->
-                    <div class="flex items-center gap-3.5 mb-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-[#E0A946]/15 border border-[#E0A946]/35 flex items-center justify-center text-[#E0A946] group-hover:scale-105 group-hover:bg-[#E0A946] group-hover:text-black transition duration-300">
-                            <i data-lucide="video" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-bold text-white font-heading group-hover:text-[#E0A946] transition">
-                                MTC DAM
-                            </h2>
-                            <p class="text-xs text-[#829FA1] font-mono">dam.mtc-network.space</p>
-                        </div>
-                    </div>
-
-                    <!-- Description -->
-                    <p class="text-sm text-[#CADEDF]/90 leading-relaxed mb-6">
-                        Central high-speed media archive for documentary and studio productions. Features raw video ingestion, AI Whisper transcription, proxy preview streaming, and team file sharing.
-                    </p>
-
-                    <!-- Feature Tags -->
-                    <div class="flex flex-wrap gap-1.5 mb-6 text-[11px] font-mono text-[#829FA1]">
-                        <span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">Media Archive</span>
-                        <span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">AI Transcription</span>
-                        <span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">Video Streaming</span>
-                    </div>
-                </div>
-
-                <!-- Action Button -->
-                <div class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#E0A946] text-[#0C1214] font-semibold text-sm shadow-md group-hover:bg-[#C99436] transition duration-200">
-                    <span>Launch MTC DAM</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition duration-200"></i>
-                </div>
-            </a>
-
-            <!-- Card 3: MTC CLOUD / NEXTCLOUD -->
-            <a href="https://nextcloud.mtc-network.space/" class="group block glass-card glass-card-cloud rounded-2xl p-6 sm:p-7 relative overflow-hidden flex flex-col justify-between md:col-span-2 lg:col-span-1">
-                <!-- Top Accent Line -->
-                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-sky-400 to-[#CADEDF] opacity-80 group-hover:opacity-100 transition"></div>
-
-                <div>
-                    <!-- Card Top Row: Badge & Status -->
-                    <div class="flex items-center justify-between gap-2 mb-5">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-500/15 border border-blue-500/40 text-blue-200 text-xs font-mono font-medium">
-                            <i data-lucide="cloud" class="w-3.5 h-3.5 text-blue-400"></i>
-                            <span>Private Cloud Storage</span>
-                        </span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            <span>Live</span>
-                        </span>
-                    </div>
-
-                    <!-- Icon & Title -->
-                    <div class="flex items-center gap-3.5 mb-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/35 flex items-center justify-center text-blue-400 group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition duration-300">
-                            <i data-lucide="folder-git-2" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-bold text-white font-heading group-hover:text-blue-300 transition">
-                                MTC CLOUD
-                            </h2>
-                            <p class="text-xs text-[#829FA1] font-mono">nextcloud.mtc-network.space</p>
-                        </div>
-                    </div>
-
-                    <!-- Description -->
-                    <p class="text-sm text-[#CADEDF]/90 leading-relaxed mb-6">
-                        Encrypted file storage and sync platform for Mountain Top Communications crew. Store production scripts, call sheets, project contracts, and synchronise work across devices.
-                    </p>
-
-                    <!-- Feature Tags -->
-                    <div class="flex flex-wrap gap-1.5 mb-6 text-[11px] font-mono text-[#829FA1]">
-                        <span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">File Sync</span>
-                        <span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">Document Vault</span>
-                        <span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">Collaborative</span>
-                    </div>
-                </div>
-
-                <!-- Action Button -->
-                <div class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md transition duration-200">
-                    <span>Launch MTC Cloud</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition duration-200"></i>
-                </div>
-            </a>
-
+        <!-- Dynamic Portal Cards Grid -->
+        <main id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Hydrated via JavaScript -->
         </main>
 
         <!-- Quick Access LAN Info Bar -->
-        <div class="mt-12 sm:mt-16 p-4 rounded-2xl bg-[#152124]/70 border border-[#24373B] text-xs font-mono text-[#829FA1] flex flex-wrap items-center justify-between gap-4">
+        <div id="host-info-bar" class="mt-12 sm:mt-16 p-4 rounded-2xl bg-[#152124]/70 border border-[#24373B] text-xs font-mono text-[#829FA1] flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-2">
                 <i data-lucide="server" class="w-4 h-4 text-[#386642]"></i>
-                <span>Local Studio Host: <strong class="text-[#CADEDF]">TrueNAS SCALE (192.168.100.169)</strong></span>
+                <span>Local Studio Host: <strong id="host-lan-ip" class="text-[#CADEDF]">TrueNAS SCALE (192.168.100.169)</strong></span>
             </div>
-            <div class="flex items-center gap-4">
-                <span>Gear: <strong class="text-[#CADEDF]">:8080</strong></span>
-                <span>DAM: <strong class="text-[#CADEDF]">:3000</strong></span>
-                <span>Cloud: <strong class="text-[#CADEDF]">:30027</strong></span>
+            <div id="quick-ports" class="flex items-center gap-4">
+                <!-- Injected via JS -->
             </div>
         </div>
 
     </div>
 
     <!-- Footer -->
-    <footer class="w-full border-t border-[#1C2C30] py-6 px-4 text-center text-xs text-[#829FA1] font-sans space-y-1.5 bg-[#0B1113]/90">
-        <div>© <span id="year"></span> Mountain Top Communications. All rights reserved.</div>
-        <div class="text-[11px] text-[#829FA1]/80 flex items-center justify-center gap-1">
-            <span>Developed with ❤️ by</span>
-            <a
-                href="https://entechnologygh.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-[#FFEBCC] hover:text-white underline underline-offset-2 transition font-medium"
-            >
-                Encryption Nonce Technology
-            </a>
+    <footer class="w-full border-t border-[#1C2C30] py-6 px-4 text-center text-xs text-[#829FA1] font-sans bg-[#0B1113]/90 relative">
+        <div class="flex flex-col sm:flex-row items-center justify-between max-w-6xl mx-auto gap-3">
+            <div>© <span id="year"></span> <span id="footer-copyright">Mountain Top Communications. All rights reserved.</span></div>
+            
+            <div class="text-[11px] text-[#829FA1]/80 flex items-center justify-center gap-1">
+                <span>Developed with ❤️ by</span>
+                <a
+                    id="footer-attribution"
+                    href="https://entechnologygh.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[#FFEBCC] hover:text-white underline underline-offset-2 transition font-medium"
+                >
+                    Encryption Nonce Technology
+                </a>
+            </div>
+
+            <!-- Discreet CMS Admin Link -->
+            <div>
+                <a href="/admin" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#152124] border border-[#24373B] hover:border-[#386642] text-[11px] text-[#829FA1] hover:text-[#FFEBCC] font-mono transition">
+                    <i data-lucide="lock" class="w-3 h-3"></i>
+                    <span>CMS Admin</span>
+                </a>
+            </div>
         </div>
     </footer>
 
-    <!-- Initialize Lucide Icons & Dynamic Year -->
+    <!-- Dynamic Hydration Script -->
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
-        lucide.createIcons();
+
+        const colorThemes = {
+            green: {
+                line: 'from-[#386642] via-[#4D8A5B] to-[#FFEBCC]',
+                badgeBg: 'bg-[#386642]/20',
+                badgeBorder: 'border-[#386642]/50',
+                badgeText: 'text-[#FFEBCC]',
+                iconBg: 'bg-[#386642]/20',
+                iconBorder: 'border-[#386642]/40',
+                iconText: 'text-[#FFEBCC]',
+                hoverTitle: 'group-hover:text-[#FFEBCC]',
+                btnBg: 'bg-[#386642] hover:bg-[#2E5437] text-[#FFEBCC]',
+                glow: 'rgba(56, 102, 66, 0.25)',
+                glowBorder: 'rgba(56, 102, 66, 0.8)'
+            },
+            gold: {
+                line: 'from-[#E0A946] via-[#F59E0B] to-[#FFEBCC]',
+                badgeBg: 'bg-[#E0A946]/15',
+                badgeBorder: 'border-[#E0A946]/40',
+                badgeText: 'text-[#FFEBCC]',
+                iconBg: 'bg-[#E0A946]/15',
+                iconBorder: 'border-[#E0A946]/35',
+                iconText: 'text-[#E0A946]',
+                hoverTitle: 'group-hover:text-[#E0A946]',
+                btnBg: 'bg-[#E0A946] hover:bg-[#C99436] text-[#0C1214]',
+                glow: 'rgba(224, 169, 70, 0.25)',
+                glowBorder: 'rgba(224, 169, 70, 0.8)'
+            },
+            blue: {
+                line: 'from-blue-500 via-sky-400 to-[#CADEDF]',
+                badgeBg: 'bg-blue-500/15',
+                badgeBorder: 'border-blue-500/40',
+                badgeText: 'text-blue-200',
+                iconBg: 'bg-blue-500/15',
+                iconBorder: 'border-blue-500/35',
+                iconText: 'text-blue-400',
+                hoverTitle: 'group-hover:text-blue-300',
+                btnBg: 'bg-blue-600 hover:bg-blue-700 text-white',
+                glow: 'rgba(59, 130, 246, 0.25)',
+                glowBorder: 'rgba(59, 130, 246, 0.8)'
+            },
+            purple: {
+                line: 'from-purple-500 via-fuchsia-400 to-[#FFEBCC]',
+                badgeBg: 'bg-purple-500/15',
+                badgeBorder: 'border-purple-500/40',
+                badgeText: 'text-purple-200',
+                iconBg: 'bg-purple-500/15',
+                iconBorder: 'border-purple-500/35',
+                iconText: 'text-purple-400',
+                hoverTitle: 'group-hover:text-purple-300',
+                btnBg: 'bg-purple-600 hover:bg-purple-700 text-white',
+                glow: 'rgba(139, 92, 246, 0.25)',
+                glowBorder: 'rgba(139, 92, 246, 0.8)'
+            },
+            rose: {
+                line: 'from-rose-500 via-pink-400 to-[#FFEBCC]',
+                badgeBg: 'bg-rose-500/15',
+                badgeBorder: 'border-rose-500/40',
+                badgeText: 'text-rose-200',
+                iconBg: 'bg-rose-500/15',
+                iconBorder: 'border-rose-500/35',
+                iconText: 'text-rose-400',
+                hoverTitle: 'group-hover:text-rose-300',
+                btnBg: 'bg-rose-600 hover:bg-rose-700 text-white',
+                glow: 'rgba(244, 63, 94, 0.25)',
+                glowBorder: 'rgba(244, 63, 94, 0.8)'
+            }
+        };
+
+        async function loadPortal() {
+            try {
+                const res = await fetch('/api/config');
+                const json = await res.json();
+                if (!json.success || !json.data) return;
+                const config = json.data;
+
+                // 1. General Branding
+                if (config.general) {
+                    if (config.general.orgName) document.getElementById('portal-org-name').textContent = config.general.orgName;
+                    if (config.general.portalTitle) document.getElementById('portal-title').textContent = config.general.portalTitle;
+                    if (config.general.portalSubtitle) document.getElementById('portal-subtitle').textContent = config.general.portalSubtitle;
+                    if (config.general.statusText) document.getElementById('header-status-text').textContent = config.general.statusText;
+                    if (config.general.copyright) document.getElementById('footer-copyright').textContent = config.general.copyright;
+                    if (config.general.attributionText) {
+                        const attr = document.getElementById('footer-attribution');
+                        attr.textContent = config.general.attributionText;
+                        if (config.general.attributionUrl) attr.href = config.general.attributionUrl;
+                    }
+                    if (config.general.showHostInfo === false) {
+                        document.getElementById('host-info-bar').classList.add('hidden');
+                    } else if (config.general.hostLanIp) {
+                        document.getElementById('host-lan-ip').textContent = `TrueNAS SCALE (${config.general.hostLanIp})`;
+                    }
+
+                    // Dynamic Brand Logo
+                    const logoContainer = document.getElementById('portal-logo-container');
+                    if (config.general && config.general.logoUrl) {
+                        logoContainer.innerHTML = `<img src="${config.general.logoUrl}" alt="${config.general.orgName || 'MTC Logo'}" class="w-full h-full object-contain p-1.5" />`;
+                    } else if (logoContainer) {
+                        logoContainer.innerHTML = `
+                            <svg width="34" height="34" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g fill="#FFEBCC">
+                                    <path d="M22 96 L48 38 C49 35 52 35 53 38 L54 41 L35 96 Z" fill-rule="evenodd"/>
+                                    <path d="M40 96 L67 24 C68.5 21 72.5 21 74 24 L79 38 L95 38 C97 38 98 40 97 42 L80 47 L80 96 Z" fill-rule="evenodd"/>
+                                    <path d="M87 96 L98 62 C99 59 101 59 102 61 L106 72 L106 96 Z" fill-rule="evenodd"/>
+                                    <path d="M98 22 C103 24 107 28 107 34 L107 46 C105 44 101 39 98 33 Z" fill-rule="evenodd"/>
+                                </g>
+                            </svg>
+                        `;
+                    }
+                }
+
+                // 2. Announcement Banner
+                const banner = document.getElementById('announcement-banner');
+                if (config.announcement && config.announcement.enabled && config.announcement.text) {
+                    banner.classList.remove('hidden');
+                    const types = {
+                        info: 'bg-blue-900/40 border-blue-700/60 text-blue-200',
+                        warning: 'bg-amber-900/40 border-amber-700/60 text-amber-200',
+                        alert: 'bg-red-900/40 border-red-700/60 text-red-200',
+                        success: 'bg-emerald-900/40 border-emerald-700/60 text-emerald-200'
+                    };
+                    banner.className = `w-full py-2.5 px-4 text-center text-xs font-medium border-b ${types[config.announcement.type] || types.info}`;
+                    if (config.announcement.link) {
+                        banner.innerHTML = `<a href="${config.announcement.link}" class="underline underline-offset-2">${config.announcement.text}</a>`;
+                    } else {
+                        banner.textContent = config.announcement.text;
+                    }
+                } else {
+                    banner.classList.add('hidden');
+                }
+
+                // 3. Render Cards
+                const container = document.getElementById('cards-container');
+                const quickPorts = document.getElementById('quick-ports');
+                container.innerHTML = '';
+                quickPorts.innerHTML = '';
+
+                const services = (config.services || []).filter(s => s.enabled !== false);
+                
+                services.forEach((s) => {
+                    const theme = colorThemes[s.color] || colorThemes.green;
+                    const tagsHtml = (s.tags || []).map(t => `<span class="px-2 py-0.5 rounded bg-[#1A282B] border border-[#2D4448]">${t}</span>`).join('');
+                    
+                    const card = document.createElement('a');
+                    card.href = s.url;
+                    card.className = `group block glass-card rounded-2xl p-6 sm:p-7 relative overflow-hidden flex flex-col justify-between`;
+                    
+                    card.onmouseenter = () => {
+                        card.style.borderColor = theme.glowBorder;
+                        card.style.boxShadow = `0 20px 40px -15px ${theme.glow}, 0 0 25px -5px ${theme.glow}`;
+                    };
+                    card.onmouseleave = () => {
+                        card.style.borderColor = '';
+                        card.style.boxShadow = '';
+                    };
+
+                    card.innerHTML = `
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${theme.line} opacity-80 group-hover:opacity-100 transition"></div>
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-5">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg ${theme.badgeBg} border ${theme.badgeBorder} ${theme.badgeText} text-xs font-mono font-medium">
+                                    <i data-lucide="${s.icon || 'layers'}" class="w-3.5 h-3.5"></i>
+                                    <span>${s.category || 'Portal'}</span>
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                    <span>${s.status || 'Live'}</span>
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-3.5 mb-3.5">
+                                <div class="w-12 h-12 rounded-xl ${theme.iconBg} border ${theme.iconBorder} flex items-center justify-center ${theme.iconText} group-hover:scale-105 transition duration-300">
+                                    <i data-lucide="${s.icon || 'layers'}" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-white font-heading ${theme.hoverTitle} transition">
+                                        ${s.title}
+                                    </h2>
+                                    <p class="text-xs text-[#829FA1] font-mono">${s.domainDisplay || s.url.replace(/^https?:\/\//, '')}</p>
+                                </div>
+                            </div>
+
+                            <p class="text-sm text-[#CADEDF]/90 leading-relaxed mb-6">
+                                ${s.description}
+                            </p>
+
+                            <div class="flex flex-wrap gap-1.5 mb-6 text-[11px] font-mono text-[#829FA1]">
+                                ${tagsHtml}
+                            </div>
+                        </div>
+
+                        <div class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl ${theme.btnBg} font-semibold text-sm shadow-md transition duration-200">
+                            <span>Launch ${s.title}</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition duration-200"></i>
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+
+                    // Add to bottom quick LAN bar if port exists
+                    if (s.port) {
+                        const portSpan = document.createElement('span');
+                        portSpan.innerHTML = `${s.title.split(' ')[1] || s.title}: <strong class="text-[#CADEDF]">:${s.port}</strong>`;
+                        quickPorts.appendChild(portSpan);
+                    }
+                });
+
+                lucide.createIcons();
+
+            } catch (err) {
+                console.error('Failed to load portal configuration:', err);
+            }
+        }
+
+        loadPortal();
     </script>
 </body>
 </html>

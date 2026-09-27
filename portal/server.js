@@ -52,8 +52,8 @@ function writeConfig(config) {
 }
 
 // Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ limit: '15mb', extended: true }));
 app.use(
     cookieSession({
         name: 'mtc_portal_session',
@@ -128,6 +128,83 @@ app.put('/api/config', requireAuth, (req, res) => {
     } catch (e) {
         console.error('Error writing config:', e);
         res.status(500).json({ success: false, message: 'Failed to save configuration' });
+    }
+});
+
+// Upload Custom Brand Logo (Protected)
+app.post('/api/upload-logo', requireAuth, (req, res) => {
+    const { imageBase64 } = req.body;
+    if (!imageBase64) {
+        return res.status(400).json({ success: false, message: 'Image data is required' });
+    }
+
+    try {
+        const matches = imageBase64.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+        if (!matches || matches.length !== 3) {
+            return res.status(400).json({ success: false, message: 'Invalid image format. Expected data URL.' });
+        }
+
+        const rawExt = matches[1].toLowerCase();
+        const ext = rawExt === 'svg+xml' ? 'svg' : rawExt === 'jpeg' ? 'jpg' : rawExt;
+        const buffer = Buffer.from(matches[2], 'base64');
+        const filename = `brand-logo.${ext}`;
+        const filePath = path.join(DATA_DIR, filename);
+
+        // Remove old logo files if they have different extensions
+        ['brand-logo.png', 'brand-logo.svg', 'brand-logo.jpg', 'brand-logo.jpeg', 'brand-logo.webp'].forEach(f => {
+            const p = path.join(DATA_DIR, f);
+            if (fs.existsSync(p)) {
+                try { fs.unlinkSync(p); } catch (e) {}
+            }
+        });
+
+        fs.writeFileSync(filePath, buffer);
+
+        const config = readConfig();
+        const logoUrl = `/api/logo?t=${Date.now()}`;
+        config.general = config.general || {};
+        config.general.logoUrl = logoUrl;
+        writeConfig(config);
+
+        res.json({ success: true, logoUrl, message: 'Logo uploaded and set successfully!' });
+    } catch (e) {
+        console.error('Logo upload error:', e);
+        res.status(500).json({ success: false, message: 'Failed to save logo image' });
+    }
+});
+
+// Serve Brand Logo
+app.get('/api/logo', (req, res) => {
+    const candidates = ['brand-logo.png', 'brand-logo.svg', 'brand-logo.jpg', 'brand-logo.jpeg', 'brand-logo.webp'];
+    for (const file of candidates) {
+        const fullPath = path.join(DATA_DIR, file);
+        if (fs.existsSync(fullPath)) {
+            res.setHeader('Cache-Control', 'public, max-age=86400');
+            return res.sendFile(fullPath);
+        }
+    }
+    return res.status(404).send('No custom logo uploaded');
+});
+
+// Reset Logo to Default (Protected)
+app.post('/api/reset-logo', requireAuth, (req, res) => {
+    try {
+        ['brand-logo.png', 'brand-logo.svg', 'brand-logo.jpg', 'brand-logo.jpeg', 'brand-logo.webp'].forEach(f => {
+            const p = path.join(DATA_DIR, f);
+            if (fs.existsSync(p)) {
+                try { fs.unlinkSync(p); } catch (e) {}
+            }
+        });
+
+        const config = readConfig();
+        config.general = config.general || {};
+        config.general.logoUrl = '';
+        writeConfig(config);
+
+        res.json({ success: true, message: 'Reset to default MTC insignia successfully!' });
+    } catch (e) {
+        console.error('Reset logo error:', e);
+        res.status(500).json({ success: false, message: 'Failed to reset logo' });
     }
 });
 

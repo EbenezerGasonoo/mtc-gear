@@ -189,6 +189,50 @@
                 </div>
 
                 <form id="branding-form" class="glass-panel p-6 rounded-2xl border border-[#2D4448] space-y-5">
+                    <!-- Brand Logo Section -->
+                    <div class="p-4 rounded-xl bg-[#0E1618] border border-[#24373B] space-y-3.5">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                                <h3 class="text-xs font-bold text-[#FFEBCC] font-mono">Brand Logo</h3>
+                                <p class="text-[11px] text-[#829FA1] font-mono">Upload a custom logo image (PNG, SVG, JPG, WebP) or paste an image URL</p>
+                            </div>
+                            <button
+                                type="button"
+                                onclick="handleResetLogo()"
+                                class="px-2.5 py-1 rounded-lg bg-[#152124] hover:bg-[#1E2E32] border border-[#2D4448] text-gray-300 hover:text-white text-[11px] font-mono transition self-start sm:self-auto"
+                            >
+                                Reset to Default Insignia
+                            </button>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center gap-4">
+                            <!-- Logo Preview Box -->
+                            <div id="admin-logo-preview" class="w-16 h-16 rounded-xl bg-[#152124] border border-[#2D4448] flex items-center justify-center overflow-hidden flex-shrink-0 shadow-md">
+                                <!-- Injected via JS -->
+                            </div>
+
+                            <div class="flex-grow w-full space-y-2.5">
+                                <div class="flex flex-wrap items-center gap-2.5">
+                                    <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#386642] hover:bg-[#2E5437] text-xs font-bold text-[#FFEBCC] font-mono transition shadow-sm">
+                                        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                        <span>Upload Logo File</span>
+                                        <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="hidden" onchange="handleLogoFileUpload(event)" />
+                                    </label>
+                                    <span id="logo-upload-spinner" class="hidden text-xs text-[#FFEBCC] font-mono animate-pulse">Uploading logo...</span>
+                                </div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        id="cfg-logoUrl"
+                                        placeholder="Or paste external logo image URL (https://...)"
+                                        class="w-full bg-[#152124] border border-[#24373B] rounded-xl px-3 py-1.5 text-xs text-white focus:border-[#386642] outline-none font-mono"
+                                        oninput="updateLogoPreview(this.value)"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Organization Name</label>
@@ -434,6 +478,7 @@
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`tab-btn-${tabId}`);
             activeBtn.className = 'px-3.5 py-1.5 rounded-lg text-[#FFEBCC] bg-[#152124] border border-[#2D4448] transition flex items-center gap-2';
+            lucide.createIcons();
         }
 
         // Check Auth Status on Load
@@ -662,9 +707,98 @@
             }
         }
 
+        // Logo Management & Preview
+        const DEFAULT_LOGO_SVG = `
+            <svg width="34" height="34" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g fill="#FFEBCC">
+                    <path d="M22 96 L48 38 C49 35 52 35 53 38 L54 41 L35 96 Z" fill-rule="evenodd"/>
+                    <path d="M40 96 L67 24 C68.5 21 72.5 21 74 24 L79 38 L95 38 C97 38 98 40 97 42 L80 47 L80 96 Z" fill-rule="evenodd"/>
+                    <path d="M87 96 L98 62 C99 59 101 59 102 61 L106 72 L106 96 Z" fill-rule="evenodd"/>
+                    <path d="M98 22 C103 24 107 28 107 34 L107 46 C105 44 101 39 98 33 Z" fill-rule="evenodd"/>
+                </g>
+            </svg>
+        `;
+
+        function updateLogoPreview(url) {
+            const preview = document.getElementById('admin-logo-preview');
+            if (!preview) return;
+            if (url && url.trim()) {
+                preview.innerHTML = `<img src="${url.trim()}" alt="Logo Preview" class="w-full h-full object-contain p-1.5" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'text-[10px] text-rose-400 font-mono text-center p-1\\'>Broken URL</span>';" />`;
+            } else {
+                preview.innerHTML = `<div class="w-full h-full bg-[#386642] flex items-center justify-center">${DEFAULT_LOGO_SVG}</div>`;
+            }
+        }
+
+        async function handleLogoFileUpload(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('File size must be under 10MB', true);
+                event.target.value = '';
+                return;
+            }
+
+            const spinner = document.getElementById('logo-upload-spinner');
+            if (spinner) spinner.classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = async () => {
+                try {
+                    const res = await fetch('/api/upload-logo', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ imageBase64: reader.result })
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        document.getElementById('cfg-logoUrl').value = json.logoUrl;
+                        if (!currentConfig.general) currentConfig.general = {};
+                        currentConfig.general.logoUrl = json.logoUrl;
+                        updateLogoPreview(json.logoUrl);
+                        showToast('Logo uploaded and set successfully!');
+                    } else {
+                        showToast(json.message || 'Failed to upload logo', true);
+                    }
+                } catch (err) {
+                    showToast('Network error while uploading logo', true);
+                } finally {
+                    if (spinner) spinner.classList.add('hidden');
+                    event.target.value = '';
+                }
+            };
+            reader.onerror = () => {
+                showToast('Failed to read image file', true);
+                if (spinner) spinner.classList.add('hidden');
+                event.target.value = '';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function handleResetLogo() {
+            if (!confirm('Reset to default MTC insignia logo?')) return;
+            try {
+                const res = await fetch('/api/reset-logo', { method: 'POST' });
+                const json = await res.json();
+                if (json.success) {
+                    document.getElementById('cfg-logoUrl').value = '';
+                    if (!currentConfig.general) currentConfig.general = {};
+                    currentConfig.general.logoUrl = '';
+                    updateLogoPreview('');
+                    showToast('Logo reset to default MTC insignia!');
+                } else {
+                    showToast(json.message || 'Failed to reset logo', true);
+                }
+            } catch (err) {
+                showToast('Network error while resetting logo', true);
+            }
+        }
+
         // Branding Form
         function populateBrandingForm() {
             const g = currentConfig.general || {};
+            document.getElementById('cfg-logoUrl').value = g.logoUrl || '';
+            updateLogoPreview(g.logoUrl || '');
             document.getElementById('cfg-orgName').value = g.orgName || '';
             document.getElementById('cfg-portalTitle').value = g.portalTitle || '';
             document.getElementById('cfg-portalSubtitle').value = g.portalSubtitle || '';
@@ -679,6 +813,7 @@
             e.preventDefault();
             currentConfig.general = {
                 ...currentConfig.general,
+                logoUrl: document.getElementById('cfg-logoUrl').value.trim(),
                 orgName: document.getElementById('cfg-orgName').value.trim(),
                 portalTitle: document.getElementById('cfg-portalTitle').value.trim(),
                 portalSubtitle: document.getElementById('cfg-portalSubtitle').value.trim(),

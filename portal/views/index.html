@@ -106,7 +106,7 @@
 
             <!-- MTC Insignia & Brand Name -->
             <div class="flex items-center justify-center gap-3.5 mb-4">
-                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#386642] flex items-center justify-center shadow-lg shadow-[#386642]/30 border border-[#4D8A5B]/40 flex-shrink-0">
+                <div id="portal-logo-container" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#386642] flex items-center justify-center shadow-lg shadow-[#386642]/30 border border-[#4D8A5B]/40 flex-shrink-0 overflow-hidden">
                     <svg width="34" height="34" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g fill="#FFEBCC">
                             <path d="M22 96 L48 38 C49 35 52 35 53 38 L54 41 L35 96 Z" fill-rule="evenodd"/>
@@ -272,6 +272,23 @@
                         document.getElementById('host-info-bar').classList.add('hidden');
                     } else if (config.general.hostLanIp) {
                         document.getElementById('host-lan-ip').textContent = `TrueNAS SCALE (${config.general.hostLanIp})`;
+                    }
+
+                    // Dynamic Brand Logo
+                    const logoContainer = document.getElementById('portal-logo-container');
+                    if (config.general && config.general.logoUrl) {
+                        logoContainer.innerHTML = `<img src="${config.general.logoUrl}" alt="${config.general.orgName || 'MTC Logo'}" class="w-full h-full object-contain p-1.5" />`;
+                    } else if (logoContainer) {
+                        logoContainer.innerHTML = `
+                            <svg width="34" height="34" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g fill="#FFEBCC">
+                                    <path d="M22 96 L48 38 C49 35 52 35 53 38 L54 41 L35 96 Z" fill-rule="evenodd"/>
+                                    <path d="M40 96 L67 24 C68.5 21 72.5 21 74 24 L79 38 L95 38 C97 38 98 40 97 42 L80 47 L80 96 Z" fill-rule="evenodd"/>
+                                    <path d="M87 96 L98 62 C99 59 101 59 102 61 L106 72 L106 96 Z" fill-rule="evenodd"/>
+                                    <path d="M98 22 C103 24 107 28 107 34 L107 46 C105 44 101 39 98 33 Z" fill-rule="evenodd"/>
+                                </g>
+                            </svg>
+                        `;
                     }
                 }
 
