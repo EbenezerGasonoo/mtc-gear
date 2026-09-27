@@ -1,0 +1,9 @@
+services:
+  mtc-portal:
+    image: nginx:alpine
+    container_name: mtc-portal
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html:ro
