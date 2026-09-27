@@ -1,9 +1,20 @@
 services:
   mtc-portal:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mtc-portal:latest
     container_name: mtc-portal
     restart: unless-stopped
     ports:
-      - "8085:80"
+      - "8085:8085"
     volumes:
-      - ./index.html:/usr/share/nginx/html/index.html:ro
+      - portal_data:/app/data
+    environment:
+      - PORT=8085
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-mtcadmin2026}
+      - SESSION_SECRET=${SESSION_SECRET:-mtc-supersecret-cms-session-key-2026}
+
+volumes:
+  portal_data:
+    name: mtc_portal_data

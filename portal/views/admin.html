@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTC Portal CMS — Management & Configuration</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mtc: {
+                            obsidian: '#0E1618',
+                            surface: '#152124',
+                            border: '#24373B',
+                            green: '#386642',
+                            'green-light': '#4D8A5B',
+                            cornsilk: '#FFEBCC',
+                            gold: '#E0A946',
+                            muted: '#829FA1',
+                            text: '#CADEDF',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        heading: ['Poppins', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            background-color: #0A0F11;
+            color: #CADEDF;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(21, 33, 36, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid #24373B;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-[#386642] selection:text-[#FFEBCC]">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none max-w-sm px-4 py-3 rounded-xl shadow-2xl text-xs font-mono flex items-center gap-2.5"></div>
+
+    <!-- Login Modal (Displayed when not logged in) -->
+    <div id="login-modal" class="fixed inset-0 z-40 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-7 relative shadow-2xl border border-[#2D4448]">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-xl bg-[#386642] flex items-center justify-center mx-auto mb-3 shadow-lg shadow-[#386642]/30 border border-[#4D8A5B]/40">
+                    <i data-lucide="lock" class="w-6 h-6 text-[#FFEBCC]"></i>
+                </div>
+                <h2 class="text-xl font-bold text-white font-heading">MTC Portal CMS</h2>
+                <p class="text-xs text-[#829FA1] mt-1 font-mono">Sign in with Admin Password to manage your portal</p>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-[#FFEBCC] mb-1.5">Admin Password</label>
+                    <div class="relative">
+                        <input
+                            type="password"
+                            id="login-password"
+                            required
+                            placeholder="Enter admin password..."
+                            class="w-full bg-[#0E1618] border border-[#24373B] focus:border-[#386642] rounded-xl px-4 py-2.5 text-sm text-white placeholder-[#829FA1]/50 outline-none transition"
+                        />
+                    </div>
+                </div>
+
+                <div id="login-error" class="hidden text-xs text-rose-400 font-mono"></div>
+
+                <button
+                    type="submit"
+                    id="login-btn"
+                    class="w-full py-2.5 px-4 rounded-xl bg-[#386642] hover:bg-[#2E5437] text-[#FFEBCC] font-bold text-sm shadow-md transition duration-200 flex items-center justify-center gap-2"
+                >
+                    <span>Authenticate to CMS</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main CMS Admin Interface -->
+    <div id="admin-app" class="hidden flex-grow flex flex-col">
+        <!-- Top Navbar -->
+        <header class="glass-panel border-b border-[#24373B] sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3.5">
+                <div class="w-9 h-9 rounded-xl bg-[#386642] flex items-center justify-center shadow-md flex-shrink-0">
+                    <svg width="22" height="22" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g fill="#FFEBCC">
+                            <path d="M22 96 L48 38 C49 35 52 35 53 38 L54 41 L35 96 Z" fill-rule="evenodd"/>
+                            <path d="M40 96 L67 24 C68.5 21 72.5 21 74 24 L79 38 L95 38 C97 38 98 40 97 42 L80 47 L80 96 Z" fill-rule="evenodd"/>
+                            <path d="M87 96 L98 62 C99 59 101 59 102 61 L106 72 L106 96 Z" fill-rule="evenodd"/>
+                        </g>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold text-white font-heading leading-tight">MTC Portal CMS</h1>
+                    <p class="text-[11px] text-[#FFEBCC] font-mono">Mountain Top Communications</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a
+                    href="/"
+                    target="_blank"
+                    class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#152124] border border-[#2D4448] hover:border-[#386642] text-xs font-mono text-[#CADEDF] hover:text-[#FFEBCC] transition"
+                >
+                    <span>View Live Portal</span>
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+
+                <button
+                    onclick="handleLogout()"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-950/40 border border-rose-800/50 hover:bg-rose-900/50 text-rose-300 text-xs font-mono transition"
+                >
+                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-[#24373B] bg-[#0E1618] px-4 sm:px-8">
+            <nav class="flex gap-2 sm:gap-6 overflow-x-auto py-2.5 text-xs font-mono">
+                <button onclick="switchTab('apps')" id="tab-btn-apps" class="px-3.5 py-1.5 rounded-lg text-[#FFEBCC] bg-[#152124] border border-[#2D4448] transition flex items-center gap-2">
+                    <i data-lucide="layout-grid" class="w-4 h-4 text-[#386642]"></i>
+                    <span>Applications & Links</span>
+                </button>
+                <button onclick="switchTab('branding')" id="tab-btn-branding" class="px-3.5 py-1.5 rounded-lg text-[#829FA1] hover:text-[#CADEDF] hover:bg-[#152124] transition flex items-center gap-2">
+                    <i data-lucide="palette" class="w-4 h-4"></i>
+                    <span>Portal & Hero Settings</span>
+                </button>
+                <button onclick="switchTab('announcement')" id="tab-btn-announcement" class="px-3.5 py-1.5 rounded-lg text-[#829FA1] hover:text-[#CADEDF] hover:bg-[#152124] transition flex items-center gap-2">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                    <span>Announcement Banner</span>
+                </button>
+                <button onclick="switchTab('security')" id="tab-btn-security" class="px-3.5 py-1.5 rounded-lg text-[#829FA1] hover:text-[#CADEDF] hover:bg-[#152124] transition flex items-center gap-2">
+                    <i data-lucide="key" class="w-4 h-4"></i>
+                    <span>Admin Security</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab 1: Apps & Links -->
+        <main class="w-full max-w-6xl mx-auto px-4 sm:px-8 py-8 flex-grow">
+            <div id="tab-apps" class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white font-heading">Application Cards</h2>
+                        <p class="text-xs text-[#829FA1] font-mono">Manage, add, reorder, or edit portal links visible on mtc-network.space</p>
+                    </div>
+                    <button
+                        onclick="openCardModal()"
+                        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#386642] hover:bg-[#2E5437] text-[#FFEBCC] font-bold text-xs shadow-md transition font-mono"
+                    >
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Add New Application</span>
+                    </button>
+                </div>
+
+                <div id="apps-list" class="space-y-3.5">
+                    <!-- Injected via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Tab 2: Branding & Hero -->
+            <div id="tab-branding" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white font-heading">Portal Branding & Settings</h2>
+                    <p class="text-xs text-[#829FA1] font-mono">Configure organization name, headers, and footer details</p>
+                </div>
+
+                <form id="branding-form" class="glass-panel p-6 rounded-2xl border border-[#2D4448] space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Organization Name</label>
+                            <input type="text" id="cfg-orgName" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Portal Title</label>
+                            <input type="text" id="cfg-portalTitle" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Hero Subtitle / Description</label>
+                        <textarea id="cfg-portalSubtitle" rows="2" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-mono text-[#FFEBCC] mb-1">System Status Badge Text</label>
+                            <input type="text" id="cfg-statusText" placeholder="e.g. Systems Online" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Local Studio Host LAN IP</label>
+                            <input type="text" id="cfg-hostLanIp" placeholder="e.g. 192.168.100.169" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none font-mono" />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-1">
+                        <input type="checkbox" id="cfg-showHostInfo" class="w-4 h-4 rounded text-[#386642] bg-[#0E1618] border-[#24373B]" />
+                        <label for="cfg-showHostInfo" class="text-xs text-[#CADEDF] font-mono">Show Studio Host LAN Info Bar on Portal</label>
+                    </div>
+
+                    <div class="border-t border-[#24373B] pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Footer Copyright Text</label>
+                            <input type="text" id="cfg-copyright" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Attribution Name</label>
+                            <input type="text" id="cfg-attributionText" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-3">
+                        <button type="submit" class="py-2.5 px-6 rounded-xl bg-[#386642] hover:bg-[#2E5437] text-[#FFEBCC] font-bold text-xs shadow-md transition font-mono">
+                            Save Branding Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tab 3: Announcement -->
+            <div id="tab-announcement" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white font-heading">Global Announcement Banner</h2>
+                    <p class="text-xs text-[#829FA1] font-mono">Broadcast notifications, maintenance alerts, or news across the portal top</p>
+                </div>
+
+                <form id="announcement-form" class="glass-panel p-6 rounded-2xl border border-[#2D4448] space-y-5">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="cfg-announcement-enabled" class="w-4 h-4 rounded text-[#386642] bg-[#0E1618] border-[#24373B]" />
+                        <label for="cfg-announcement-enabled" class="text-xs font-bold text-[#FFEBCC] font-mono">Enable Announcement Banner</label>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Banner Type / Severity</label>
+                        <select id="cfg-announcement-type" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none font-mono">
+                            <option value="info">Info (Blue)</option>
+                            <option value="warning">Warning / Maintenance (Amber)</option>
+                            <option value="alert">Emergency Alert (Red)</option>
+                            <option value="success">Success / New Feature (Green)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Announcement Message</label>
+                        <textarea id="cfg-announcement-text" rows="2" placeholder="e.g. Server maintenance scheduled for Sunday at 02:00 UTC." class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Optional Link URL</label>
+                        <input type="url" id="cfg-announcement-link" placeholder="https://..." class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none font-mono" />
+                    </div>
+
+                    <div class="flex justify-end pt-3">
+                        <button type="submit" class="py-2.5 px-6 rounded-xl bg-[#386642] hover:bg-[#2E5437] text-[#FFEBCC] font-bold text-xs shadow-md transition font-mono">
+                            Save Announcement Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tab 4: Security -->
+            <div id="tab-security" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white font-heading">Admin Password & Security</h2>
+                    <p class="text-xs text-[#829FA1] font-mono">Change the CMS admin access password</p>
+                </div>
+
+                <form id="password-form" class="glass-panel p-6 rounded-2xl border border-[#2D4448] max-w-lg space-y-4">
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Current Password</label>
+                        <input type="password" id="sec-current-pass" required class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">New Password (min 6 characters)</label>
+                        <input type="password" id="sec-new-pass" required minlength="6" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Confirm New Password</label>
+                        <input type="password" id="sec-confirm-pass" required minlength="6" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-[#386642] hover:bg-[#2E5437] text-[#FFEBCC] font-bold text-xs shadow-md transition font-mono">
+                            Update Admin Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Card Modal -->
+    <div id="card-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-6 sm:p-7 relative shadow-2xl border border-[#2D4448] my-8">
+            <div class="flex items-center justify-between mb-5">
+                <h3 id="modal-card-title" class="text-base font-bold text-white font-heading">Add New Application Card</h3>
+                <button onclick="closeCardModal()" class="text-[#829FA1] hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="card-form" class="space-y-4">
+                <input type="hidden" id="card-edit-id" />
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Application Title *</label>
+                        <input type="text" id="card-title" required placeholder="e.g. MTC GEAR" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Category Badge *</label>
+                        <input type="text" id="card-category" required placeholder="e.g. Equipment Vault" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Target URL *</label>
+                    <input type="url" id="card-url" required placeholder="https://gear.mtc-network.space/" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none font-mono" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Display Domain (optional)</label>
+                    <input type="text" id="card-domainDisplay" placeholder="gear.mtc-network.space" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none font-mono" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Description *</label>
+                    <textarea id="card-description" rows="2" required placeholder="Brief description of this application..." class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Color Theme</label>
+                        <select id="card-color" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3 py-2 text-xs text-white focus:border-[#386642] outline-none font-mono">
+                            <option value="green">Hunter Green</option>
+                            <option value="gold">Warm Gold</option>
+                            <option value="blue">Sky Blue</option>
+                            <option value="purple">Royal Purple</option>
+                            <option value="rose">Rose Pink</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Lucide Icon</label>
+                        <select id="card-icon" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3 py-2 text-xs text-white focus:border-[#386642] outline-none font-mono">
+                            <option value="camera">camera</option>
+                            <option value="film">film</option>
+                            <option value="video">video</option>
+                            <option value="cloud">cloud</option>
+                            <option value="server">server</option>
+                            <option value="shield-check">shield-check</option>
+                            <option value="folder-git-2">folder-git-2</option>
+                            <option value="database">database</option>
+                            <option value="radio">radio</option>
+                            <option value="layers">layers</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Local Port (optional)</label>
+                        <input type="text" id="card-port" placeholder="e.g. 8080" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3 py-2 text-xs text-white focus:border-[#386642] outline-none font-mono" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-[#FFEBCC] mb-1">Feature Tags (comma-separated)</label>
+                    <input type="text" id="card-tags" placeholder="e.g. Asset Registry, QR Scanner, Signatures" class="w-full bg-[#0E1618] border border-[#24373B] rounded-xl px-3.5 py-2 text-sm text-white focus:border-[#386642] outline-none font-mono" />
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="card-enabled" checked class="w-4 h-4 rounded text-[#386642] bg-[#0E1618] border-[#24373B]" />
+                    <label for="card-enabled" class="text-xs text-[#FFEBCC] font-mono">Visible on public landing page</label>
+                </div>
+
+                <div class="flex items-center justify-end gap-2.5 pt-3">
+                    <button type="button" onclick="closeCardModal()" class="py-2 px-4 rounded-xl bg-[#152124] hover:bg-[#1E2E32] text-[#829FA1] text-xs font-mono transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="py-2 px-5 rounded-xl bg-[#386642] hover:bg-[#2E5437] text-[#FFEBCC] font-bold text-xs shadow-md transition font-mono">
+                        Save Application
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Controller -->
+    <script>
+        let currentConfig = null;
+
+        // Toast Helper
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `fixed top-5 right-5 z-50 transform transition-all duration-300 pointer-events-none max-w-sm px-4 py-3 rounded-xl shadow-2xl text-xs font-mono flex items-center gap-2.5 ${
+                isError ? 'bg-rose-900 border border-rose-700 text-white' : 'bg-emerald-950 border border-emerald-700 text-[#FFEBCC]'
+            } translate-y-0 opacity-100`;
+
+            setTimeout(() => {
+                toast.className = toast.className.replace('translate-y-0 opacity-100', 'translate-y-[-100px] opacity-0');
+            }, 3000);
+        }
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            ['apps', 'branding', 'announcement', 'security'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-btn-${t}`);
+                btn.className = 'px-3.5 py-1.5 rounded-lg text-[#829FA1] hover:text-[#CADEDF] hover:bg-[#152124] transition flex items-center gap-2';
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            activeBtn.className = 'px-3.5 py-1.5 rounded-lg text-[#FFEBCC] bg-[#152124] border border-[#2D4448] transition flex items-center gap-2';
+        }
+
+        // Check Auth Status on Load
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth-status');
+                const json = await res.json();
+                if (json.authenticated) {
+                    document.getElementById('login-modal').classList.add('hidden');
+                    document.getElementById('admin-app').classList.remove('hidden');
+                    loadConfig();
+                } else {
+                    document.getElementById('login-modal').classList.remove('hidden');
+                    document.getElementById('admin-app').classList.add('hidden');
+                }
+            } catch (e) {
+                console.error('Auth check error:', e);
+            }
+        }
+
+        // Handle Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('login-password').value;
+            const errDiv = document.getElementById('login-error');
+            errDiv.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    document.getElementById('login-modal').classList.add('hidden');
+                    document.getElementById('admin-app').classList.remove('hidden');
+                    showToast('Authenticated to CMS successfully');
+                    loadConfig();
+                } else {
+                    errDiv.textContent = json.message || 'Invalid password';
+                    errDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errDiv.textContent = 'Network or server error';
+                errDiv.classList.remove('hidden');
+            }
+        });
+
+        // Handle Logout
+        async function handleLogout() {
+            await fetch('/api/logout', { method: 'POST' });
+            location.reload();
+        }
+
+        // Load Configuration
+        async function loadConfig() {
+            try {
+                const res = await fetch('/api/config');
+                const json = await res.json();
+                if (!json.success) return;
+                currentConfig = json.data;
+                renderApps();
+                populateBrandingForm();
+                populateAnnouncementForm();
+                lucide.createIcons();
+            } catch (err) {
+                showToast('Failed to load configuration', true);
+            }
+        }
+
+        // Render Apps Tab
+        function renderApps() {
+            const list = document.getElementById('apps-list');
+            list.innerHTML = '';
+
+            (currentConfig.services || []).forEach((s, idx) => {
+                const row = document.createElement('div');
+                row.className = `glass-panel p-4 rounded-xl border border-[#24373B] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:border-[#386642]`;
+
+                const isEnabled = s.enabled !== false;
+                const statusBadge = isEnabled
+                    ? `<span class="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-700/60 text-emerald-300 text-[10px] font-mono">Active</span>`
+                    : `<span class="px-2 py-0.5 rounded bg-gray-900 border border-gray-700 text-gray-400 text-[10px] font-mono">Hidden</span>`;
+
+                row.innerHTML = `
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-[#0E1618] border border-[#24373B] flex items-center justify-center text-[#FFEBCC] flex-shrink-0">
+                            <i data-lucide="${s.icon || 'layers'}" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-bold text-white font-heading">${s.title}</h4>
+                                <span class="text-[11px] text-[#829FA1] font-mono font-normal">(${s.category})</span>
+                                ${statusBadge}
+                            </div>
+                            <p class="text-xs text-[#829FA1] font-mono mt-0.5">${s.url}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 self-end sm:self-center font-mono">
+                        <button onclick="moveApp(${idx}, -1)" title="Move Up" class="p-1.5 rounded-lg bg-[#0E1618] hover:bg-[#1E2E32] text-[#829FA1] hover:text-white transition">
+                            <i data-lucide="chevron-up" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="moveApp(${idx}, 1)" title="Move Down" class="p-1.5 rounded-lg bg-[#0E1618] hover:bg-[#1E2E32] text-[#829FA1] hover:text-white transition">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="editApp(${idx})" class="px-3 py-1.5 rounded-lg bg-[#152124] hover:bg-[#1E2E32] border border-[#2D4448] text-xs text-[#FFEBCC] transition flex items-center gap-1.5">
+                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                            <span>Edit</span>
+                        </button>
+                        <button onclick="deleteApp(${idx})" class="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-800/50 text-rose-300 transition" title="Delete">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+
+            lucide.createIcons();
+        }
+
+        // Move App Up/Down
+        async function moveApp(idx, direction) {
+            const newIdx = idx + direction;
+            if (newIdx < 0 || newIdx >= currentConfig.services.length) return;
+            const temp = currentConfig.services[idx];
+            currentConfig.services[idx] = currentConfig.services[newIdx];
+            currentConfig.services[newIdx] = temp;
+            await saveConfig();
+            renderApps();
+        }
+
+        // Delete App
+        async function deleteApp(idx) {
+            if (!confirm(`Are you sure you want to delete "${currentConfig.services[idx].title}"?`)) return;
+            currentConfig.services.splice(idx, 1);
+            await saveConfig();
+            renderApps();
+            showToast('Application removed');
+        }
+
+        // Card Modal Operations
+        function openCardModal(editIdx = null) {
+            document.getElementById('card-form').reset();
+            document.getElementById('card-enabled').checked = true;
+
+            if (editIdx !== null) {
+                const s = currentConfig.services[editIdx];
+                document.getElementById('modal-card-title').textContent = 'Edit Application Card';
+                document.getElementById('card-edit-id').value = editIdx;
+                document.getElementById('card-title').value = s.title || '';
+                document.getElementById('card-category').value = s.category || '';
+                document.getElementById('card-url').value = s.url || '';
+                document.getElementById('card-domainDisplay').value = s.domainDisplay || '';
+                document.getElementById('card-description').value = s.description || '';
+                document.getElementById('card-color').value = s.color || 'green';
+                document.getElementById('card-icon').value = s.icon || 'layers';
+                document.getElementById('card-port').value = s.port || '';
+                document.getElementById('card-tags').value = (s.tags || []).join(', ');
+                document.getElementById('card-enabled').checked = s.enabled !== false;
+            } else {
+                document.getElementById('modal-card-title').textContent = 'Add New Application Card';
+                document.getElementById('card-edit-id').value = '';
+            }
+
+            document.getElementById('card-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeCardModal() {
+            document.getElementById('card-modal').classList.add('hidden');
+        }
+
+        function editApp(idx) {
+            openCardModal(idx);
+        }
+
+        // Save Card Submit
+        document.getElementById('card-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('card-edit-id').value;
+
+            const newService = {
+                id: editId !== '' ? currentConfig.services[editId].id : 'app_' + Date.now(),
+                title: document.getElementById('card-title').value.trim(),
+                category: document.getElementById('card-category').value.trim(),
+                url: document.getElementById('card-url').value.trim(),
+                domainDisplay: document.getElementById('card-domainDisplay').value.trim() || document.getElementById('card-url').value.trim().replace(/^https?:\/\//, ''),
+                description: document.getElementById('card-description').value.trim(),
+                color: document.getElementById('card-color').value,
+                icon: document.getElementById('card-icon').value,
+                port: document.getElementById('card-port').value.trim(),
+                tags: document.getElementById('card-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+                enabled: document.getElementById('card-enabled').checked,
+                status: 'Live',
+                statusColor: 'emerald'
+            };
+
+            if (editId !== '') {
+                currentConfig.services[editId] = newService;
+            } else {
+                currentConfig.services.push(newService);
+            }
+
+            await saveConfig();
+            closeCardModal();
+            renderApps();
+            showToast(editId !== '' ? 'Application card updated!' : 'New application added!');
+        });
+
+        // Save Full Config to Server
+        async function saveConfig() {
+            try {
+                const res = await fetch('/api/config', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentConfig)
+                });
+                const json = await res.json();
+                if (!json.success) {
+                    showToast(json.message || 'Error saving changes', true);
+                }
+            } catch (err) {
+                showToast('Failed to connect to server', true);
+            }
+        }
+
+        // Branding Form
+        function populateBrandingForm() {
+            const g = currentConfig.general || {};
+            document.getElementById('cfg-orgName').value = g.orgName || '';
+            document.getElementById('cfg-portalTitle').value = g.portalTitle || '';
+            document.getElementById('cfg-portalSubtitle').value = g.portalSubtitle || '';
+            document.getElementById('cfg-statusText').value = g.statusText || '';
+            document.getElementById('cfg-hostLanIp').value = g.hostLanIp || '';
+            document.getElementById('cfg-showHostInfo').checked = g.showHostInfo !== false;
+            document.getElementById('cfg-copyright').value = g.copyright || '';
+            document.getElementById('cfg-attributionText').value = g.attributionText || '';
+        }
+
+        document.getElementById('branding-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            currentConfig.general = {
+                ...currentConfig.general,
+                orgName: document.getElementById('cfg-orgName').value.trim(),
+                portalTitle: document.getElementById('cfg-portalTitle').value.trim(),
+                portalSubtitle: document.getElementById('cfg-portalSubtitle').value.trim(),
+                statusText: document.getElementById('cfg-statusText').value.trim(),
+                hostLanIp: document.getElementById('cfg-hostLanIp').value.trim(),
+                showHostInfo: document.getElementById('cfg-showHostInfo').checked,
+                copyright: document.getElementById('cfg-copyright').value.trim(),
+                attributionText: document.getElementById('cfg-attributionText').value.trim()
+            };
+            await saveConfig();
+            showToast('Portal branding settings saved!');
+        });
+
+        // Announcement Form
+        function populateAnnouncementForm() {
+            const a = currentConfig.announcement || {};
+            document.getElementById('cfg-announcement-enabled').checked = Boolean(a.enabled);
+            document.getElementById('cfg-announcement-type').value = a.type || 'info';
+            document.getElementById('cfg-announcement-text').value = a.text || '';
+            document.getElementById('cfg-announcement-link').value = a.link || '';
+        }
+
+        document.getElementById('announcement-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            currentConfig.announcement = {
+                enabled: document.getElementById('cfg-announcement-enabled').checked,
+                type: document.getElementById('cfg-announcement-type').value,
+                text: document.getElementById('cfg-announcement-text').value.trim(),
+                link: document.getElementById('cfg-announcement-link').value.trim()
+            };
+            await saveConfig();
+            showToast('Announcement banner settings saved!');
+        });
+
+        // Change Password Form
+        document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentPassword = document.getElementById('sec-current-pass').value;
+            const newPassword = document.getElementById('sec-new-pass').value;
+            const confirmPassword = document.getElementById('sec-confirm-pass').value;
+
+            if (newPassword !== confirmPassword) {
+                return showToast('New passwords do not match', true);
+            }
+
+            try {
+                const res = await fetch('/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    showToast('Admin password changed successfully!');
+                    document.getElementById('password-form').reset();
+                } else {
+                    showToast(json.message || 'Error updating password', true);
+                }
+            } catch (err) {
+                showToast('Server error while changing password', true);
+            }
+        });
+
+        // Start
+        checkAuth();
+        lucide.createIcons();
+    </script>
+</body>
+</html>

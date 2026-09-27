@@ -1,0 +1,67 @@
+{
+  "general": {
+    "orgName": "Mountain Top Communications",
+    "portalTitle": "Production Operations & Enterprise Portals",
+    "portalSubtitle": "Select an application portal below to manage equipment reservations, access central media assets, or collaborate in the cloud.",
+    "statusText": "Systems Online",
+    "statusState": "online",
+    "showHostInfo": true,
+    "hostLanIp": "192.168.100.169",
+    "copyright": "Mountain Top Communications. All rights reserved.",
+    "attributionText": "Encryption Nonce Technology",
+    "attributionUrl": "https://entechnologygh.com/"
+  },
+  "announcement": {
+    "enabled": false,
+    "type": "info",
+    "text": "Notice: Routine backup window scheduled for Sunday 02:00 - 03:00 GMT.",
+    "link": ""
+  },
+  "services": [
+    {
+      "id": "gear",
+      "title": "MTC GEAR",
+      "url": "https://gear.mtc-network.space/",
+      "domainDisplay": "gear.mtc-network.space",
+      "category": "Equipment Vault",
+      "description": "Complete production equipment inventory, camera packages, QR code thermal printing, field reservations, mobile handover inspection checklists, and maintenance tickets.",
+      "icon": "camera",
+      "color": "green",
+      "status": "Live",
+      "statusColor": "emerald",
+      "tags": ["Asset Registry", "QR Scanner", "Digital Signatures"],
+      "enabled": true,
+      "port": "8080"
+    },
+    {
+      "id": "dam",
+      "title": "MTC DAM",
+      "url": "https://dam.mtc-network.space/",
+      "domainDisplay": "dam.mtc-network.space",
+      "category": "Digital Asset Management",
+      "description": "Central high-speed media archive for documentary and studio productions. Features raw video ingestion, AI Whisper transcription, proxy preview streaming, and team file sharing.",
+      "icon": "film",
+      "color": "gold",
+      "status": "Live",
+      "statusColor": "emerald",
+      "tags": ["Media Archive", "AI Transcription", "Video Streaming"],
+      "enabled": true,
+      "port": "3000"
+    },
+    {
+      "id": "cloud",
+      "title": "MTC CLOUD",
+      "url": "https://nextcloud.mtc-network.space/",
+      "domainDisplay": "nextcloud.mtc-network.space",
+      "category": "Private Cloud Storage",
+      "description": "Encrypted file storage and sync platform for Mountain Top Communications crew. Store production scripts, call sheets, project contracts, and synchronise work across devices.",
+      "icon": "cloud",
+      "color": "blue",
+      "status": "Live",
+      "statusColor": "emerald",
+      "tags": ["File Sync", "Document Vault", "Collaborative"],
+      "enabled": true,
+      "port": "30027"
+    }
+  ]
+}

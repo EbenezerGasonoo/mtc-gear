@@ -1,0 +1,14 @@
+{
+  "name": "mtc-portal",
+  "version": "1.0.0",
+  "description": "Mountain Top Communications Unified Production Portal & CMS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-session": "^2.1.0",
+    "express": "^4.21.2"
+  }
+}
